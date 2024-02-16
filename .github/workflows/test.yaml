@@ -1,4 +1,4 @@
-## blip
+## blop
 
 on:
   push:
@@ -33,17 +33,22 @@ jobs:
         
   test:
     if: "!contains(needs.get_message.outputs.commitmsg, '[skip-ci]')" 
+    needs: get_message
     runs-on: ubuntu-latest
    
+    env:
+      MSG: ${{ needs.get_message.outputs.commitmsg }}
+    
     steps:
       - name: test env var
         if: "!contains(needs.get_message.outputs.commitmsg, '[skip-tests]')"
         run: |
+          echo "$MSG"
           echo "not skipping tests"
           
       - name: test env var2
         if: "contains(needs.get_message.outputs.commitmsg, '[skip-tests]')"
         run: |
-          echo ${{github.event.head_commit.message}}
+          echo "$MSG"
           echo "skipping tests"
 
