@@ -1,10 +1,10 @@
 on:
   push:
     branches:
-      - development
+      - devl
   pull_request:
     branches:
-      - development
+      - devl
 
 
 name: test
