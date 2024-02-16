@@ -29,7 +29,7 @@ jobs:
           echo "COMMITMSG=$(git log --format=%B -n 1 ${{ github.event.after }})" >> "$GITHUB_OUTPUT"
       - name: Echo commit message
         run: | 
-          echo "commit message: ${{ steps.get_message.COMMITMSG }}"
+          echo "commit message: $COMMITMSG"
 
   test:
     if: "!contains(${{ needs.get_message.head-commit-message }}, '[skip-ci]')" 
