@@ -12,19 +12,37 @@ on:
 name: test
 
 jobs:
+  get_message:
+    name: Get comming message
+    runs-on: ubuntu-latest
+    outputs:
+      head-commit-message: ${{ steps.get_message.outputs.COMMITMSG }}
+    steps:
+      - name: Get repo at last commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{github.event.after}}
+      - name: Save commit message
+        id: get_message
+        run: |
+          echo "COMMITMSG=$(git log --format=%B -n 1 ${{ github.event.after }})" >> "$GITHUB_OUTPUT"
+      - name: Echo commit message
+        run: | 
+          echo "commit message: ${{ steps.get_message.COMMITMSG }}"
+
   test:
-    if: "!contains(github.event.head_commit.message, '[skip-ci]')" 
+    if: "!contains(${{ needs.get_message.head-commit-message }}, '[skip-ci]')" 
     runs-on: ubuntu-latest
    
     steps:
       - name: test env var
-        if: "!contains(github.event.head_commit.message, '[skip-tests]')"
+        if: "!contains(${{ needs.get_message.head-commit-message }}, '[skip-tests]')"
         run: |
           echo "not skipping tests"
           
       - name: test env var2
-        if: "contains(github.event.head_commit.message, '[skip-tests]')"
+        if: "contains(${{ needs.get_message.head-commit-message }}, '[skip-tests]')"
         run: |
-          echo ${{github.event.head_commit.message}}
           echo "skipping tests"
 
