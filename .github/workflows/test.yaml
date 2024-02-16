@@ -1,0 +1,30 @@
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+on:
+  push:
+    branches:
+      - development
+  pull_request:
+    branches:
+      - development
+
+
+name: test
+
+jobs:
+  test:
+    if: "!contains(github.event.head_commit.message, '[skip-ci]')" 
+    runs-on: ubuntu-latest
+   
+    steps:
+      - name: test env var
+        if: "!contains(github.event.head_commit.message, '[skip-tests]')"
+        run: |
+          echo "skipping tests"
+          
+      - name: test env var2
+        if: "contains(github.event.head_commit.message, '[skip-tests]')"
+        run: |
+          echo ${{github.event.head_commit.message}}
+          echo "not skipping tests"
+
