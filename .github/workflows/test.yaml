@@ -16,6 +16,8 @@ name: test
 jobs:
   get_message:
     runs-on: ubuntu-latest
+    outputs:
+      commitmsg: ${{ steps.getmsg.outputs.msg }}
     
     steps:
       - uses: actions/checkout@v4
@@ -23,23 +25,24 @@ jobs:
           fetch-depth: 0
     
       - name: Set tags env variables
+        id: getmsg
         run: |
           # Get your last commit message, not the merge commit.
-          text=$(git log -1 --no-merges --pretty=%B)
-          echo "commit message: $text"
+          msg=$(git log -1 --no-merges --pretty=%B) >> $GITHUB_OUTPUT
+          echo "commit message: $msg"
         
   test:
-    if: "!contains(github.event.head_commit.message, '[skip-ci]')" 
+    if: "!contains(needs.get_message.outputs.commitmsg, '[skip-ci]')" 
     runs-on: ubuntu-latest
    
     steps:
       - name: test env var
-        if: "!contains(github.event.head_commit.message, '[skip-tests]')"
+        if: "!contains(needs.get_message.outputs.commitmsg, '[skip-tests]')"
         run: |
           echo "not skipping tests"
           
       - name: test env var2
-        if: "contains(github.event.head_commit.message, '[skip-tests]')"
+        if: "contains(needs.get_message.outputs.commitmsg, '[skip-tests]')"
         run: |
           echo ${{github.event.head_commit.message}}
           echo "skipping tests"
