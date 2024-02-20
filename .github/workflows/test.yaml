@@ -27,8 +27,9 @@ jobs:
         id: getmsg
         run: |
           # Get your last commit message, not the merge commit.
+          msg=$(git log -1 --no-merges --pretty=%B)
           echo "msg=$(git log -1 --no-merges --pretty=%B)" >> "$GITHUB_OUTPUT"
-          echo "commit message: ${{ steps.getmsg.outputs.msg }}"
+          echo "commit message: $msg"
         
   test:
     if: "!contains(needs.get_message.outputs.commitmsg, '[skip-ci]')" 
