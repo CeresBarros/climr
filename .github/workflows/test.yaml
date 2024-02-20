@@ -29,7 +29,7 @@ jobs:
         id: getmsg
         run: |
           # Get your last commit message, not the merge commit.
-          echo "msg=$(git log -1 --no-merges --pretty=%B)" >> $GITHUB_OUTPUT
+          echo "msg=$(git log -1 --no-merges --pretty=%B)" >> "$GITHUB_OUTPUT"
           echo "commit message: $msg"
         
   test:
